@@ -177,6 +177,21 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener { //
 			player.sety_MovingDistance(-4/Math.PI);
 		}
 		
+		if(playerMoveLeft == true && playerMoveDown == true) {
+			player.setx_MovingDistance(-4/Math.PI);
+			player.sety_MovingDistance(4/Math.PI);
+		}
+		
+		if(playerMoveRight == true && playerMoveUp == true) {
+			player.setx_MovingDistance(4/Math.PI);
+			player.sety_MovingDistance(-4/Math.PI);
+		}
+		
+		if(playerMoveRight == true && playerMoveDown == true) {
+			player.setx_MovingDistance(4/Math.PI);
+			player.sety_MovingDistance(4/Math.PI);
+		}
+		
 		
 		
 		if(playerMoveUp == true) {
