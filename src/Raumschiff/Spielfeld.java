@@ -39,7 +39,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Player- und Shot-Variablen
 	private Player player;
 	private Shot[] shots;
-	private int shotSpeed;
 	private boolean playerMoveUp;
 
 	//Mouseposition
@@ -61,7 +60,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private void initPlayer() {
 		player = new Player(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() * 0.9), 10, 10, Math.PI, 0);
 		shots = new Shot[5];
-		shotSpeed = -2;
 	}
 
 	private void initEnemy() {
@@ -138,7 +136,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 																					// Enemy-Mittelpunkts
 			double er = enemy.getHeight() / 2; // Enemy-Radius
 
-			if (enemy.checkCollision(sx, ex, sy, ey, sr, er) == true) {
+			if (enemy.checkCollision(sx, ex, sy, ey, sr, er)) {
 				shots[i] = null; // Shot wird gelöscht
 				enemyAlive = false; // Enemy stirbt
 				s.start(); // Respawn-Timer starten
@@ -149,15 +147,19 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	
 	//Berechnen den Winkel zwischen Raumschiff und Mauszeiger
 	
-	private double getAngle() {
+	private double movingAngle() {
 		
-		double dx = player.getObjectPosition().getX() - mouseX;
-		double dy = mouseY - player.getObjectPosition().getY();
-		
+		double dx = player.getObjectPosition().getX() -mouseX;
+		double dy = player.getObjectPosition().getY() - mouseY;
 		double hypothe = Math.sqrt((dx * dx) + (dy * dy));
-		System.out.println(Math.asin(dy/hypothe));
-		return Math.acos(dx/hypothe);
-	}
+		double angle = Math.acos(dx/hypothe);
+
+		if (dy >= 0){
+			return angle;
+		}else
+			return -angle;
+		}
+
 
 	private void doOnTick() {
 
@@ -168,7 +170,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				shots[i].makeMove();
 
 				// test if shot is out
-				if (shots[i].getObjectPosition().getY() < 0) { // remove shot from array
+				if (shots[i].getObjectPosition().getY() < 0 ||
+						shots[i].getObjectPosition().getY() + shots[i].getHeight()> prefSize.getHeight() ||
+						shots[i].getObjectPosition().getX()< 0 ||
+					shots[i].getObjectPosition().getX() + shots[i].getWidth() > prefSize.getWidth()){ // remove shot from array
 					shots[i] = null;
 				}
 
@@ -176,7 +181,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		}
 		
-		if (enemyAlive == true) { // Bewegen des lebendigen Enemy
+		if (enemyAlive) { // Bewegen des lebendigen Enemy
 
 			enemy.makeMove();
 			enemyHit();
@@ -190,15 +195,17 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 
 		// move player
-		player.setMovingAngle(getAngle());
-		if(playerMoveUp == true) {					//Playerbewegung mit Beschleunigung und maximalem Speed
-			if(player.getMovingDistance()<= player.getMaxSpeed()) {
-			player.setMovingDistance(player.getMovingDistance()+ player.getAcceleration());
-			}
+		player.setMovingAngle(movingAngle());
+		if(playerMoveUp) {					//Playerbewegung mit Beschleunigung und maximalem Speed
+			player.setMovingDistance(-5);
+//			if(player.getMovingDistance()<= player.getMaxSpeed()) {
+//			player.setMovingDistance(player.getMovingDistance() + player.getAcceleration());
+
 		}else {										// Simulierte Reibung beim Nichtdrücken der Tasten
-			if(player.getMovingDistance()> 0) {
-				player.setMovingDistance(player.getMovingDistance() - 0.25 * player.getAcceleration());
-			}
+			player.setMovingDistance(0);
+//			if(player.getMovingDistance() > 0) {
+//				player.setMovingDistance(player.getMovingDistance() - 0.25 * player.getAcceleration());
+//			}
 		}
 		player.makeMove();		
 		repaint();
@@ -226,7 +233,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					shots[i].paintMe(g2d);
 				}
 			}
-			if (enemyAlive == true) { // Zeichnen des Enemy
+			if (enemyAlive) { // Zeichnen des Enemy
 				enemy.paintMe(g);
 			}
 		}
@@ -274,12 +281,12 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			playerMoveUp=true; 
 			break;
 		case KeyEvent.VK_DOWN:
-			player.setMovingDistance(-5);
+			player.setMovingDistance(5);
 			break;
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
 			for (int i = 0; i < shots.length; i++) {
 				if (shots[i] == null) { // Falls ein Platz "frei" ist.
-					shots[i] = player.generateShot();
+					shots[i] = player.generateShot(movingAngle());
 					break;
 				}
 			}

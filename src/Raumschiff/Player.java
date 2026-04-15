@@ -10,14 +10,6 @@ public class Player extends GameObject {
 	int shotspeed = -4;
 	private double acceleration = 0.5;
 	private double maxSpeed = 3;
-//	private boolean playerMoveLeft;
-//	private boolean playerMoveRight;
-//	private boolean playerMoveUp;
-//	private boolean playerMoveDown;
-//	private double playerSpeedX;
-//	private double playerSpeedY;
-//	private double playerx;
-//	private double playery;
 
 	public Player(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
 
@@ -25,13 +17,6 @@ public class Player extends GameObject {
 		super(objectPosition, width, height);
 		setMovingAngle(movingAngle); // Achtung der Winkel wird im Bogenma� angegeben!!
 		setMovingDistance(movingDistance);
-//		playerMoveLeft = false;
-//		playerMoveRight = false;
-//		playerMoveUp = false;
-//		playerMoveDown = false;
-//		playerSpeedX = 3;
-//		playerSpeedY = 3;
-
 	}
 
 	@Override
@@ -56,10 +41,10 @@ public class Player extends GameObject {
 		return maxSpeed;
 	}
 
-	public Shot generateShot() {
+	public Shot generateShot(double movingAngle_Raumschiff) {
 		Shot shot = new Shot(
 				new Coordinate(this.getObjectPosition().getX() - shotsize / 2, this.getObjectPosition().getY()),
-				shotsize, shotsize, Math.PI / 2, shotspeed);
+				shotsize, shotsize, movingAngle_Raumschiff, shotspeed);
 		return shot;
 	}
 
