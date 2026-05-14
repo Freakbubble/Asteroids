@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
 public class Enemy extends GameObject {
-	private double mittelpunkt_x;
-	private double mittelpunkt_y;
 
 	private Color color;
 

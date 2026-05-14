@@ -7,7 +7,7 @@ import java.awt.Color;
 public class Player extends GameObject {
 	// Variablen
 	int shotsize = 2;
-	int shotspeed = -4;
+	int shotspeed = -1;
 	private double acceleration = -0.25;
 	private double maxSpeed = -5;
 

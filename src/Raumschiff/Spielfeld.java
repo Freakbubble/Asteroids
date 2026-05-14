@@ -31,7 +31,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	private Cursor c;
 
-	private boolean isStopped;
+	private boolean gameRunning;
 
 	// Enemyvariablen
 	private boolean enemyAlive;
@@ -53,7 +53,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		setFocusable(true);
 		setPreferredSize(prefSize);
 
-		isStopped = true;
+		gameRunning = false;
 
 		initGame(); // zum Erstellen der Oberfl�che (Ausgangszustand)
 		startGame(); // Starten des Timers. Dieser ruft die Methode doOnTick() auf, in der die
@@ -119,7 +119,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	}
 
 	public void continueGame() {
-		if (!isStopped) {
+		if (gameRunning) {
 			t.start();
 		}
 	}
@@ -164,6 +164,19 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			return -angle;
 		}
 
+		private void checkShot(){
+			for (int i = 0; i < shots.length; i++) {
+				if (shots[i] != null) { // Bewegung des Schusses
+					shots[i].makeMove();
+
+					// Testen ob der Schuss noch im Spielfeld ist
+					if (shots[i].isOut(prefSize)){ // Schuss aus der Liste loeschen
+						shots[i] = null;
+					}
+				}
+			}
+		}
+
 
 	private void doOnTick() {
 
@@ -171,19 +184,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		// Die einzelnen Sch�sse werden bewegt und auf Verlassen der
 		// Spielfl�che �berpr�ft.
-		for (int i = 0; i < shots.length; i++) {
-			if (shots[i] != null) { // Bewegung des Schusses
-				shots[i].makeMove();
-
-				// test if shot is out
-				if (shots[i].getObjectPosition().getY() < 0 ||
-						shots[i].getObjectPosition().getY() + shots[i].getHeight()> prefSize.getHeight() ||
-						shots[i].getObjectPosition().getX()< 0 ||
-					shots[i].getObjectPosition().getX() + shots[i].getWidth() > prefSize.getWidth()){ // remove shot from array
-					shots[i] = null;
-				}
-			}
-		}
+		checkShot();
 		
 		if (enemyAlive) { // Bewegen des lebendigen Enemy
 
@@ -220,7 +221,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// Um die Kanten des Objekts zu gl�tten
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		if (isStopped) {
+		if (!gameRunning) {
 			g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 			g2d.setColor(Color.BLUE);
 			g2d.drawString("Fuehre einen Doppelklick aus,", 20, 20);
@@ -267,7 +268,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// TODO Auto-generated method stub
 		switch(e.getButton()){
 			case MouseEvent.BUTTON1:
-				if(!isStopped) {
+				if(gameRunning) {
 					for (int i = 0; i < shots.length; i++) {
 						if (shots[i] == null) { // Falls ein Platz "frei" ist.
 							shots[i] = player.generateShot(angle);
@@ -282,9 +283,9 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if (isStopped && e.getClickCount() == 2) {
+		if (!gameRunning && e.getClickCount() == 2) {
 			// Alle wichtigen Werte zur�cksetzen
-			isStopped = false;
+			gameRunning = true;
 		}
 	}
 
