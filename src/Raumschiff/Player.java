@@ -8,8 +8,8 @@ public class Player extends GameObject {
 	// Variablen
 	int shotsize = 2;
 	int shotspeed = -4;
-	private double acceleration = 0.5;
-	private double maxSpeed = 3;
+	private double acceleration = -0.25;
+	private double maxSpeed = -5;
 
 	public Player(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
 
@@ -43,7 +43,8 @@ public class Player extends GameObject {
 
 	public Shot generateShot(double movingAngle_Raumschiff) {
 		Shot shot = new Shot(
-				new Coordinate(this.getObjectPosition().getX() - shotsize / 2, this.getObjectPosition().getY()),
+				new Coordinate(this.getObjectPosition().getX() - shotsize / 2 - Math.cos(movingAngle_Raumschiff) *10,
+						this.getObjectPosition().getY() - Math.sin(movingAngle_Raumschiff) * 10),
 				shotsize, shotsize, movingAngle_Raumschiff, shotspeed);
 		return shot;
 	}
@@ -54,8 +55,8 @@ public class Player extends GameObject {
 		int x_pos = (int) this.getObjectPosition().getX();
 		int y_pos = (int) this.getObjectPosition().getY();
 		int[] x_poly = { x_pos, x_pos - 10, x_pos, x_pos + 10 };
-		int[] y_poly = { y_pos, y_pos + 15, y_pos + 10, y_pos + 15 };
-		g2d.fillPolygon(x_poly, y_poly, 4); // Zeichnung beginnt an der Spitze des Raumschiffs.
+		int[] y_poly = { y_pos - 10, y_pos + 5, y_pos, y_pos + 5 };
+		g2d.fillPolygon(x_poly, y_poly, 4); // Zeichnung an der unteren Seite des Raumschiffs.
 	}
 
 }

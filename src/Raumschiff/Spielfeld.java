@@ -14,6 +14,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 //import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -40,6 +41,9 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private Player player;
 	private Shot[] shots;
 	private boolean playerMoveUp;
+
+	// Winkel für die Bewegungen des Spielers,der Schüsse und der AffineTransform-Klasse
+	private double angle;
 
 	//Mouseposition
 	private double mouseX;
@@ -163,6 +167,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	private void doOnTick() {
 
+		angle = movingAngle();
+
 		// Die einzelnen Sch�sse werden bewegt und auf Verlassen der
 		// Spielfl�che �berpr�ft.
 		for (int i = 0; i < shots.length; i++) {
@@ -195,17 +201,15 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 
 		// move player
-		player.setMovingAngle(movingAngle());
+		player.setMovingAngle(angle);
 		if(playerMoveUp) {					//Playerbewegung mit Beschleunigung und maximalem Speed
-			player.setMovingDistance(-5);
-//			if(player.getMovingDistance()<= player.getMaxSpeed()) {
-//			player.setMovingDistance(player.getMovingDistance() + player.getAcceleration());
-
-		}else {										// Simulierte Reibung beim Nichtdrücken der Tasten
-			player.setMovingDistance(0);
-//			if(player.getMovingDistance() > 0) {
-//				player.setMovingDistance(player.getMovingDistance() - 0.25 * player.getAcceleration());
-//			}
+			if(player.getMovingDistance()> player.getMaxSpeed()) {
+			player.setMovingDistance(player.getMovingDistance() + player.getAcceleration());
+		}
+		}else{										// Simulierte Reibung beim Nichtdrücken der Tasten
+			if(player.getMovingDistance() < 0) {
+				player.setMovingDistance(player.getMovingDistance() -  0.5 * player.getAcceleration());
+			}
 		}
 		player.makeMove();		
 		repaint();
@@ -226,8 +230,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		} else {
 			// alles, was gemacht werden muss, w�hrend das Spiel l�uft
+			AffineTransform backup = g2d.getTransform();
+			g2d.rotate(angle - Math.PI/2,player.getObjectPosition().getX(),player.getObjectPosition().getY());
 			player.paintMe(g2d);
-
+			g2d.setTransform(backup);
 			for (int i = 0; i < shots.length; i++) {
 				if (shots[i] != null) {
 					shots[i].paintMe(g2d);
@@ -261,7 +267,19 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
+		switch(e.getButton()){
+			case MouseEvent.BUTTON1:
+				if(!isStopped) {
+					for (int i = 0; i < shots.length; i++) {
+						if (shots[i] == null) { // Falls ein Platz "frei" ist.
+							shots[i] = player.generateShot(angle);
+							break;
+						}
+					}
+				}
+				break;
 
+		}
 	}
 
 	@Override
@@ -286,20 +304,24 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
 			for (int i = 0; i < shots.length; i++) {
 				if (shots[i] == null) { // Falls ein Platz "frei" ist.
-					shots[i] = player.generateShot(movingAngle());
+					shots[i] = player.generateShot(angle);
 					break;
 				}
 			}
+			break;
 		}
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
-			playerMoveUp = false; 
+			playerMoveUp = false;
+			break;
 		case KeyEvent.VK_DOWN:
 			player.setMovingDistance(0);
+			break;
 		}
 	}
 
