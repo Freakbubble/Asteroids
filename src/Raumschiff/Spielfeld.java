@@ -182,9 +182,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					shots[i].getObjectPosition().getX() + shots[i].getWidth() > prefSize.getWidth()){ // remove shot from array
 					shots[i] = null;
 				}
-
 			}
-
 		}
 		
 		if (enemyAlive) { // Bewegen des lebendigen Enemy
