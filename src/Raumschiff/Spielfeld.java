@@ -278,7 +278,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					}
 				}
 				break;
-
 		}
 	}
 
