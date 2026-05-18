@@ -34,8 +34,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private boolean gameRunning;
 
 	// Enemyvariablen
-	private boolean enemyAlive;
-	private Enemy enemy;
+	private boolean asteroidAlive;
+	private Asteroid enemy;
 
 	// Player- und Shot-Variablen
 	private Player player;
@@ -68,10 +68,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	private void initEnemy() {
 
-		enemy = new Enemy(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() / 2), 20, 20, 0, 1,
+		enemy = new Asteroid(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() / 2), 20, 20, 0, 1,
 				new Color(0, 0, 0));
 
-		enemyAlive = true;
+		asteroidAlive = true;
 	}
 
 	private void initGame() {
@@ -103,7 +103,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// Respawn Timer
 		s = new Timer(500, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				enemyAlive = true;
+				asteroidAlive = true;
 				s.stop();
 			}
 		});
@@ -142,7 +142,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 			if (enemy.checkCollision(sx, ex, sy, ey, sr, er)) {
 				shots[i] = null; // Shot wird gelöscht
-				enemyAlive = false; // Enemy stirbt
+				asteroidAlive = false; // Enemy stirbt
 				s.start(); // Respawn-Timer starten
 				break;
 			}
@@ -186,7 +186,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// Spielfl�che �berpr�ft.
 		checkShot();
 		
-		if (enemyAlive) { // Bewegen des lebendigen Enemy
+		if (asteroidAlive) { // Bewegen des lebendigen Enemy
 
 			enemy.makeMove();
 			enemyHit();
@@ -238,7 +238,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					shots[i].paintMe(g2d);
 				}
 			}
-			if (enemyAlive) { // Zeichnen des Enemy
+			if (asteroidAlive) { // Zeichnen des Enemy
 				enemy.paintMe(g);
 			}
 		}
