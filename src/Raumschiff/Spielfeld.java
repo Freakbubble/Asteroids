@@ -15,6 +15,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.awt.Toolkit;
+import java.awt.GraphicsDevice;
+
 //import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -22,9 +25,8 @@ import javax.swing.Timer;
 
 public class Spielfeld extends JPanel implements MouseListener, KeyListener, MouseMotionListener { // JPanel ist eine Klasse, in der
 																				// gezeichnet werden kann
-
-	private final Dimension prefSize = new Dimension(800, 400); // Die Dimension des Spielfeldes k�nnte auch anders
-																// gew�hlt werden...
+	//Abfragen der aktuellen Bildschirmgröße und Setzen der Dimension auf diese
+	private final Dimension prefSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
 
 	private Timer t;
 	private Timer s;
@@ -157,7 +159,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 	}
 	
-	//Berechnen den Winkel zwischen Raumschiff und Mauszeiger
+	//Berechnen des Winkels zwischen Raumschiff und Mauszeiger
 	
 	private double movingAngle() {
 		
@@ -309,8 +311,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		case KeyEvent.VK_UP:
 			playerMoveUp=true; 
 			break;
-		case KeyEvent.VK_DOWN:
-			player.setMovingDistance(5);
+			case KeyEvent.VK_W:
+			playerMoveUp = true;
 			break;
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
 			for (int i = 0; i < shots.length; i++) {
@@ -327,12 +329,15 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	@Override
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_UP:
-			playerMoveUp = false;
-			break;
-		case KeyEvent.VK_DOWN:
-			player.setMovingDistance(0);
-			break;
+			case KeyEvent.VK_UP:
+				playerMoveUp = false;
+				break;
+			case KeyEvent.VK_DOWN:
+				player.setMovingDistance(0);
+				break;
+			case KeyEvent.VK_W:
+				playerMoveUp = false;
+				break;
 		}
 	}
 

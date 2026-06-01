@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 
 
 public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B.Fenstereigenschaften geerbt
-										  //Darüber hinaus ist JFrame ein Container für andere Objekte (JPanel, Menu,..)
+										  //Darï¿½ber hinaus ist JFrame ein Container fï¿½r andere Objekte (JPanel, Menu,..)
 	private Spielfeld spielfeld;
 	
 	public SpielFenster() {
@@ -20,13 +20,13 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 		//Spielfeld erzeugen
 		spielfeld = new Spielfeld();		
 		
-		registerWindowListener();    // WindowListener registrieren (z.B. Schließen des Fensters)
-		createMenu();  // Erzeugen des Menüs
+		registerWindowListener();    // WindowListener registrieren (z.B. Schlieï¿½en des Fensters)
+		createMenu();  // Erzeugen des Menï¿½s
 		
-		add(spielfeld);  //Hinzufügen des Spielfeldes zum SpielFenster ; (add() erben alle von Container)
-		pack();  //Ideale Größe berechnen
+		add(spielfeld);  //Hinzufï¿½gen des Spielfeldes zum SpielFenster ; (add() erben alle von Container)
+		pack();  //Ideale Grï¿½ï¿½e berechnen
 		
-		this.setTitle("Fliegender Ball");
+		this.setTitle("Asteroids");
 		this.setLocation(10,10); //Linke obere Fensterecke festlegen
 		this.setResizable(false);
 		this.setVisible(true);
@@ -37,19 +37,19 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	
 	private void createMenu() {  
       
-	    JMenuBar menuBar = new JMenuBar();  //Menüleiste erzeugen...
-	    this.setJMenuBar(menuBar);	//...und dem JFrame hinzufügen
+	    JMenuBar menuBar = new JMenuBar();  //Menï¿½leiste erzeugen...
+	    this.setJMenuBar(menuBar);	//...und dem JFrame hinzufï¿½gen
 	         
-	    JMenu fileMenu = new JMenu("Datei");  //Drei Menüs erzeugen...
+	    JMenu fileMenu = new JMenu("Datei");  //Drei Menï¿½s erzeugen...
 	    JMenu gameMenu = new JMenu("Spiel");
 	    JMenu prefMenu = new JMenu("Einstellungen");
 	         
-	    menuBar.add(fileMenu);    //... und zur Menüleiste hinzufügen    
+	    menuBar.add(fileMenu);    //... und zur Menï¿½leiste hinzufï¿½gen    
 	    menuBar.add(gameMenu);        
 	    menuBar.add(prefMenu);
 	        
-	    addFileMenuItems(fileMenu); //Methode für Menüeintrag aufrufen
-	    							// und Menüeintrag erzeugen
+	    addFileMenuItems(fileMenu); //Methode fï¿½r Menï¿½eintrag aufrufen
+	    							// und Menï¿½eintrag erzeugen
 	    addSpielMenuItems(gameMenu);
 	}
 	     
@@ -58,12 +58,12 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	    JMenuItem quitItem = new JMenuItem("Ende");
 	    fileMenu.add(quitItem); 
 	    
-	  // Ergänzen eines ActionListeners (um auf einen Mausklick zu reagieren)
+	  // Ergï¿½nzen eines ActionListeners (um auf einen Mausklick zu reagieren)
 	    quitItem.addActionListener(new ActionListener() {	//es wird eine anonyme Klasse (sie hat keinen Namen)
 			//definiert und gleichzeitig ein Objekt der Klasse erzeugt. Nachdem nach "new" ein Schnittstellenname
 			// ("Actionlistener") verwendet wird, wird in der anonymen Klasse das angegebene Interface implementiert.
 	        @Override
-	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgeführt.
+	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgefï¿½hrt.
 	            System.exit(0);
 	        }
 	    }); 
@@ -75,7 +75,7 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	    gameMenu.add(pauseItem); 	    	  
 	    pauseItem.addActionListener(new ActionListener() {	
 	        @Override
-	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgeführt.
+	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgefï¿½hrt.
 	            spielfeld.pauseGame();
 	        }
 	    }); 
@@ -84,7 +84,7 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	    gameMenu.add(continueItem); 	    	  
 	    continueItem.addActionListener(new ActionListener() {	
 	        @Override
-	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgeführt.
+	        public void actionPerformed(ActionEvent e) {	//Die anonyme Klasse besitzt diese Methode. Sie wird beim Anklicken ausgefï¿½hrt.
 	            spielfeld.continueGame();
 	        }
 	    }); 
@@ -93,19 +93,19 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	private void registerWindowListener() {        
 	    addWindowListener(new WindowAdapter() {  
 	    	//Hier wird von der Abstrakten Klasse WindowAdapter, einer abstrakten Klasse,
-	    	//abgeleitet, die Fensterereignisse empfängt.
-			//Es müssen nur benötigte Methoden der Klasse ausprogrammiert werden (sonst bleiben sie leer).
+	    	//abgeleitet, die Fensterereignisse empfï¿½ngt.
+			//Es mï¿½ssen nur benï¿½tigte Methoden der Klasse ausprogrammiert werden (sonst bleiben sie leer).
 	        @Override
 	        public void windowClosing(WindowEvent e) { 	        	
 	        	System.exit(0); 
 	        }
 	        @Override
 	        public void windowDeactivated(WindowEvent e) {
-	            // hier können wir unser Spiel pausieren                
+	            // hier kï¿½nnen wir unser Spiel pausieren                
 	        }
 	        @Override
 	        public void windowActivated(WindowEvent e) {
-	            // hier können wir unser Spiel wieder fortsetzen
+	            // hier kï¿½nnen wir unser Spiel wieder fortsetzen
 	        }            
 	    });        
 	}
