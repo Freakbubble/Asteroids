@@ -7,7 +7,8 @@ import java.awt.geom.Ellipse2D;
 
 public class Asteroid extends GameObject {
 
-	private Color color;
+	private final Color color;
+	private int health = 0;
 
 	// Attribute der Klasse Enemy
 	public Asteroid(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance,
@@ -27,8 +28,19 @@ public class Asteroid extends GameObject {
 		super.makeMove();
 	}
 
+	public void setHealth(int new_health){
+		health = new_health;
+	}
+
 	public void bounce() {
 		this.setMovingDistance(-movingDistance);
+	}
+
+	public Ore generateOre(){
+		Ore ore = new Ore(new Coordinate( this.getObjectPosition().getX() + this.getWidth()/2
+				,this.getObjectPosition().getY() + this.getHeight()/2), 2,2
+				);
+		return ore;
 	}
 
 	@Override

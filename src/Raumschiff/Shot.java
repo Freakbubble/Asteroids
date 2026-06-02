@@ -7,6 +7,8 @@ import java.awt.geom.Ellipse2D;
 
 public class Shot extends GameObject {
 
+	private int damage = 0;
+
 	public Shot(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
 
 		// TODO Auto-generated constructor stub
@@ -14,6 +16,14 @@ public class Shot extends GameObject {
 		setMovingAngle(movingAngle); // Achtung der Winkel wird im Bogenma� angegeben!!
 		setMovingDistance(movingDistance);
 
+	}
+
+	public void setDamage(int new_damage){
+		damage = new_damage;
+	}
+
+	public int getDamage(){
+		return damage;
 	}
 
 	@Override
