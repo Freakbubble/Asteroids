@@ -17,9 +17,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.Toolkit;
 import java.awt.GraphicsDevice;
-
-//import java.util.ArrayList;
-
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -38,7 +36,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Asteroidvariablen
 	private boolean[] asteroidAlive;
 	private Asteroid[] asteroid;
-	private Ore ore;
+	private Ore[] ore;
 
 	// Player- und Shot-Variablen
 	private Player player;
@@ -78,6 +76,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					new Color(0, 0, 0));
 			asteroidAlive[i] = true;
 		}
+		ore = new Ore[15];
 	}
 
 	private void initGame() {
@@ -151,7 +150,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				if (asteroid[j].checkCollision(sx, ex, sy, ey, sr, er)) {
 					shots[i] = null; // Shot wird gelöscht
 					asteroidAlive[j] = false;
-					asteroid[i].generateOre();// Asteroid wird zerstört
+					ore[j] = asteroid[j].generateOre();// Asteroid wird zerstört
 					s.start(); // Respawn-Timer starten
 					break;
 				}
@@ -256,9 +255,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					asteroid[i].paintMe(g);
 				}
 			}
-			if(ore != null){
-				ore.paintMe(g);
+			for (int i = 0; i < ore.length; i++) {
+				if(ore[i] != null){
+				ore[i].paintMe(g);
+				}
+
 			}
+
 		}
 
 

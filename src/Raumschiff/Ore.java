@@ -5,7 +5,7 @@ import java.awt.geom.Ellipse2D;
 
 public class Ore extends GameObject{
 
-    private int money;
+    private int value;
 
     public Ore(Coordinate objectPosition, double width, double height) {
         super(objectPosition, width, height);

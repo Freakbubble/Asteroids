@@ -38,8 +38,7 @@ public class Asteroid extends GameObject {
 
 	public Ore generateOre(){
 		Ore ore = new Ore(new Coordinate( this.getObjectPosition().getX() + this.getWidth()/2
-				,this.getObjectPosition().getY() + this.getHeight()/2), 2,2
-				);
+				,this.getObjectPosition().getY() + this.getHeight()/2), 5,5);
 		return ore;
 	}
 
