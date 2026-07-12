@@ -6,8 +6,8 @@ import java.awt.Color;
 
 public class Player extends GameObject {
 	// Variablen
-	int shotsize = 2;
-	int shotspeed = -5;
+	int shotsize = 3;
+	int shotspeed = -8;
 	private double acceleration = -0.25;
 	private double maxSpeed = -5;
 
@@ -54,8 +54,8 @@ public class Player extends GameObject {
 		g2d.setColor(Color.RED);
 		int x_pos = (int) this.getObjectPosition().getX();
 		int y_pos = (int) this.getObjectPosition().getY();
-		int[] x_poly = { x_pos, x_pos - 10, x_pos, x_pos + 10 };
-		int[] y_poly = { y_pos - 10, y_pos + 5, y_pos, y_pos + 5 };
+		int[] x_poly = { x_pos, x_pos - 15, x_pos, x_pos + 15 };
+		int[] y_poly = { y_pos - 15, y_pos + 8, y_pos, y_pos + 8 };
 		g2d.fillPolygon(x_poly, y_poly, 4); // Zeichnung an der unteren Seite des Raumschiffs.
 	}
 

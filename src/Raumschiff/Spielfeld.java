@@ -16,10 +16,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.Toolkit;
-import java.awt.GraphicsDevice;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.util.Iterator;
 
 public class Spielfeld extends JPanel implements MouseListener, KeyListener, MouseMotionListener { // JPanel ist eine Klasse, in der
 																				// gezeichnet werden kann
@@ -40,7 +40,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	// Player- und Shot-Variablen
 	private Player player;
-	private Shot[] shots;
+	private ArrayList<Shot> shots;
 	private boolean playerMoveUp;
 
 	// Winkel für die Bewegungen des Spielers,der Schüsse und der AffineTransform-Klasse
@@ -57,22 +57,22 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		gameRunning = false;
 
 		initGame(); // zum Erstellen der Oberfl�che (Ausgangszustand)
-		startGame(); // Starten des Timers. Dieser ruft die Methode doOnTick() auf, in der die
-						// Ver�nderungen passieren.
+//		startGame(); // Starten des Timers. Dieser ruft die Methode doOnTick() auf, in der die
+//						// Ver�nderungen passieren.
 
 	}
 
 	private void initPlayer() {
 		player = new Player(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() * 0.9), 10, 10, Math.PI, 0);
-		shots = new Shot[5];
+		shots = new ArrayList<>();
 	}
 
 	private void initAsteroid() {
 
-		asteroid = new Asteroid[10];
-		asteroidAlive = new boolean[10];
+		asteroid = new Asteroid[1000];
+		asteroidAlive = new boolean[1000];
 		for (int i = 0; i < asteroid.length; i++) {
-			asteroid[i] = new Asteroid(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() / 2), 20, 20, Math.random()*2*Math.PI, 1,
+			asteroid[i] = new Asteroid(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() / 2), 30, 30, Math.random()*2*Math.PI, 1,
 					new Color(0, 0, 0));
 			asteroidAlive[i] = true;
 		}
@@ -96,8 +96,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		// Mauszeiger wird zu Fadenkreuz
 		c = new Cursor(Cursor.CROSSHAIR_CURSOR);
-		this.setCursor(c);		
-		
+		this.setCursor(c);
 
 		t = new Timer(20, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,29 +133,32 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Prüft, ob ein Gegner von einem Schuss getroffen wurde
 	private void asteroidHit() {
 
-		for (int i = 0; i < shots.length; i++) {
-			Shot shot = shots[i];
-			if (shot == null)
-				continue;
-			double sx = shot.getObjectPosition().getX() + shot.getWidth() / 2; // x- Koordinate des Shot-Mittelpunkts
-			double sy = shot.getObjectPosition().getY() + shot.getHeight() / 2; // y- Koordinate des Shot-Mittelpunkts
-			double sr = shot.getHeight() / 2; // Shot-Radius
-			for (int j = 0; j < asteroid.length; j++){
-				double ex = asteroid[j].getObjectPosition().getX() + asteroid[j].getWidth() / 2; // x- Koordinate des asteroid-Mittelpunkts
-				double ey = asteroid[j].getObjectPosition().getY() + asteroid[j].getHeight() / 2; // x- Koordinate des
-				// asteroid-Mittelpunkts
-				double er = asteroid[j].getHeight() / 2; // asteroid-Radius
+			Iterator<Shot> shotIterator = shots.iterator();
 
-				if (asteroid[j].checkCollision(sx, ex, sy, ey, sr, er)) {
-					shots[i] = null; // Shot wird gelöscht
-					asteroidAlive[j] = false;
-					ore[j] = asteroid[j].generateOre();// Asteroid wird zerstört
-					s.start(); // Respawn-Timer starten
-					break;
+			while (shotIterator.hasNext()) {
+
+				Shot shot = shotIterator.next();
+
+				double sx = shot.getObjectPosition().getX() + shot.getWidth() / 2; // x- Koordinate des Shot-Mittelpunkts
+				double sy = shot.getObjectPosition().getY() + shot.getHeight() / 2; // y- Koordinate des Shot-Mittelpunkts
+				double sr = shot.getHeight() / 2; // Shot-Radius
+				for (int j = 0; j < asteroid.length; j++) {
+					double ex = asteroid[j].getObjectPosition().getX() + asteroid[j].getWidth() / 2; // x- Koordinate des asteroid-Mittelpunkts
+					double ey = asteroid[j].getObjectPosition().getY() + asteroid[j].getHeight() / 2; // x- Koordinate des
+					// asteroid-Mittelpunkts
+					double er = asteroid[j].getHeight() / 2; // asteroid-Radius
+
+					if (asteroid[j].checkCollision(sx, ex, sy, ey, sr, er)) {
+						shotIterator.remove(); // Shot wird gelöscht
+						asteroidAlive[j] = false;
+						ore[j] = asteroid[j].generateOre();// Asteroid wird zerstört
+						s.start(); // Respawn-Timer starten
+						break;
+					}
 				}
 			}
 		}
-	}
+
 	
 	//Berechnen des Winkels zwischen Raumschiff und Mauszeiger
 	
@@ -174,16 +176,22 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 
 		private void checkShot(){
-			for (int i = 0; i < shots.length; i++) {
-				if (shots[i] != null) { // Bewegung des Schusses
-					shots[i].makeMove();
 
-					// Testen ob der Schuss noch im Spielfeld ist
-					if (shots[i].isOut(prefSize)){ // Schuss aus der Liste loeschen
-						shots[i] = null;
-					}
+			Iterator<Shot> iShot = shots.iterator();
+
+			while(iShot.hasNext()){
+
+				Shot shot = iShot.next();
+
+				shot.makeMove();
+
+				if(shot.isOut(prefSize)){
+
+					iShot.remove();
+
 				}
 			}
+
 		}
 
 
@@ -199,16 +207,15 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			if (asteroidAlive[i]) { // Bewegen des lebendigen asteroid
 
 				asteroid[i].makeMove();
-				asteroidHit();
 
-				if (asteroid[i].getObjectPosition().getX() <= 0
-						|| asteroid[i].getObjectPosition().getX() + asteroid[i].getWidth() >= prefSize.getWidth()) {
-
-					asteroid[i].bounce(); // Abprallen des Gegners am Rand
-
-				}
+//				if (asteroid[i].getObjectPosition().getX() <= 0
+//						|| asteroid[i].getObjectPosition().getX() + asteroid[i].getWidth() >= prefSize.getWidth()) {
+//					asteroid[i].bounce(); // Abprallen des Gegners am Rand
+//
+//				}
 			}
 		}
+		asteroidHit();
 
 
 		// move player
@@ -245,16 +252,17 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			g2d.rotate(angle - Math.PI/2,player.getObjectPosition().getX(),player.getObjectPosition().getY());
 			player.paintMe(g2d);
 			g2d.setTransform(backup);
-			for (int i = 0; i < shots.length; i++) {
-				if (shots[i] != null) {
-					shots[i].paintMe(g2d);
-				}
+
+			for (Shot shot : shots) {
+					shot.paintMe(g2d);
 			}
+
 			for (int i = 0; i < asteroidAlive.length; i++) {
 				if (asteroidAlive[i]) { // Zeichnen des asteroid
 					asteroid[i].paintMe(g);
 				}
 			}
+
 			for (int i = 0; i < ore.length; i++) {
 				if(ore[i] != null){
 				ore[i].paintMe(g);
@@ -290,13 +298,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// TODO Auto-generated method stub
 		switch(e.getButton()){
 			case MouseEvent.BUTTON1:
-				if(gameRunning) {
-					for (int i = 0; i < shots.length; i++) {
-						if (shots[i] == null) { // Falls ein Platz "frei" ist.
-							shots[i] = player.generateShot(angle);
-							break;
-						}
-					}
+				if(gameRunning) {	//neuen Schuss mit linker Maustaste erzeugen, nur wenn das Spiel läuft
+					shots.add(player.generateShot(angle));
 				}
 				break;
 		}
@@ -308,6 +311,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		if (!gameRunning && e.getClickCount() == 2) {
 			// Alle wichtigen Werte zur�cksetzen
 			gameRunning = true;
+			startGame();
 		}
 	}
 
@@ -322,12 +326,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			playerMoveUp = true;
 			break;
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
-			for (int i = 0; i < shots.length; i++) {
-				if (shots[i] == null) { // Falls ein Platz "frei" ist.
-					shots[i] = player.generateShot(angle);
-					break;
-				}
-			}
+			shots.add(player.generateShot(angle));
 			break;
 		}
 

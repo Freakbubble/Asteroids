@@ -1,9 +1,9 @@
 package Raumschiff;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;		
-
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;	
 import java.awt.event.WindowEvent;		
 
@@ -15,7 +15,15 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 	public SpielFenster() {
 		
 		//Spielfeld erzeugen
-		spielfeld = new Spielfeld();		
+		spielfeld = new Spielfeld();
+
+		//
+//		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//		GraphicsDevice gd = ge.getDefaultScreenDevice();
+//
+//		if (gd.isFullScreenSupported()) {
+//			gd.setFullScreenWindow(this);
+//		}
 
 		//Icon des Fensters ändern
 		ImageIcon img = new ImageIcon("res/assets/Asteroid_Cover.png");	//Neues ImageIcon aus dem Res-Ordner holen
@@ -29,7 +37,7 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 		pack();  //Ideale Gr��e berechnen
 		
 		this.setTitle("Asteroids");
-		this.setLocation(10,10); //Linke obere Fensterecke festlegen
+		this.setLocation(0,0); //Linke obere Fensterecke festlegen
 		this.setResizable(false);
 		this.setVisible(true);
 		
