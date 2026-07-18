@@ -11,6 +11,14 @@ public class Ore extends GameObject{
         super(objectPosition, width, height);
     }
 
+    private setValue(int newValue){
+        value = newValue;
+    }
+
+    private int getValue(){
+        return value;
+    }
+
     @Override
     protected void paintMe(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
