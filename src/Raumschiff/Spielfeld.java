@@ -42,6 +42,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private Player player;
 	private ArrayList<Shot> shots;
 	private boolean playerMoveUp;
+	private boolean canShot;
 
 	// Winkel für die Bewegungen des Spielers,der Schüsse und der AffineTransform-Klasse
 	private double angle;
@@ -69,14 +70,14 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	private void initAsteroid() {
 
-		asteroid = new Asteroid[1000];
-		asteroidAlive = new boolean[1000];
+		asteroid = new Asteroid[50];
+		asteroidAlive = new boolean[50];
 		for (int i = 0; i < asteroid.length; i++) {
-			asteroid[i] = new Asteroid(new Coordinate(prefSize.getWidth() / 2, prefSize.getHeight() / 2), 30, 30, Math.random()*2*Math.PI, 1,
+			asteroid[i] = new Asteroid(prefSize, 40, 40, Math.random()*2*Math.PI, 1,
 					new Color(0, 0, 0));
 			asteroidAlive[i] = true;
 		}
-		ore = new Ore[15];
+		ore = new Ore[50];
 	}
 
 	private void initGame() {
@@ -84,7 +85,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// asteroid und Player initiieren
 		initPlayer();
 		initAsteroid();
-
+		canShot = true;
 		// Registrieren des MouseListeners
 		addMouseListener(this);
 		
@@ -104,12 +105,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			}
 		});
 
-		// Respawn Timer
+		// Schuss-Timer
 		s = new Timer(500, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < asteroidAlive.length ; i++) {
-					asteroidAlive[i] = true;
-				}
+				canShot = true;
 				s.stop();
 			}
 		});
@@ -298,8 +297,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// TODO Auto-generated method stub
 		switch(e.getButton()){
 			case MouseEvent.BUTTON1:
-				if(gameRunning) {	//neuen Schuss mit linker Maustaste erzeugen, nur wenn das Spiel läuft
+				if(gameRunning && canShot) {	//neuen Schuss mit linker Maustaste erzeugen, nur wenn das Spiel läuft
 					shots.add(player.generateShot(angle));
+					canShot = false;
+					s.start();
 				}
 				break;
 		}
@@ -326,7 +327,11 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			playerMoveUp = true;
 			break;
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
-			shots.add(player.generateShot(angle));
+			if (canShot) {
+				shots.add(player.generateShot(angle));
+				canShot = false;
+				s.start();
+			}
 			break;
 		}
 

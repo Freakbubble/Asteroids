@@ -11,11 +11,11 @@ public class Ore extends GameObject{
         super(objectPosition, width, height);
     }
 
-    private setValue(int newValue){
+    public void setValue(int newValue) {
         value = newValue;
     }
 
-    private int getValue(){
+    public int getValue(){
         return value;
     }
 
