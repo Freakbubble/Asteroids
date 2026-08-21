@@ -16,7 +16,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.util.Iterator;
@@ -32,9 +36,9 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private Cursor c;
 
 	private boolean gameRunning;
+	private BufferedImage spielfeld_image;
 
 	// Asteroidvariablen
-	private boolean[] asteroidAlive;
 	private Asteroid[] asteroid;
 	private Ore[] ore;
 
@@ -71,21 +75,28 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private void initAsteroid() {
 
 		asteroid = new Asteroid[50];
-		asteroidAlive = new boolean[50];
 		for (int i = 0; i < asteroid.length; i++) {
 			asteroid[i] = new Asteroid(prefSize, 40, 40, Math.random()*2*Math.PI, 1,
 					new Color(0, 0, 0));
-			asteroidAlive[i] = true;
 		}
 		ore = new Ore[50];
 	}
 
 	private void initGame() {
 
+//		try {		//Laden der Bilddatei des Spielfeld
+//			spielfeld_image = ImageIO.read( new File( "res/assets/background.jpg" ) );
+//		} catch (IOException e) {
+//			System.out.println(e);
+//		}
+
 		// asteroid und Player initiieren
 		initPlayer();
 		initAsteroid();
 		canShot = true;
+
+
+
 		// Registrieren des MouseListeners
 		addMouseListener(this);
 		
@@ -149,7 +160,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 					if (asteroid[j].checkCollision(sx, ex, sy, ey, sr, er)) {
 						shotIterator.remove(); // Shot wird gelöscht
-						asteroidAlive[j] = false;
 						ore[j] = asteroid[j].generateOre();// Asteroid wird zerstört
 						s.start(); // Respawn-Timer starten
 						break;
@@ -202,20 +212,16 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// Spielfl�che �berpr�ft.
 		checkShot();
 
-		for (int i = 0; i < asteroidAlive.length; i++) {
-			if (asteroidAlive[i]) { // Bewegen des lebendigen asteroid
+		for (int i = 0; i < asteroid.length; i++) {
 
 				asteroid[i].makeMove();
 
 //				if (asteroid[i].getObjectPosition().getX() <= 0
 //						|| asteroid[i].getObjectPosition().getX() + asteroid[i].getWidth() >= prefSize.getWidth()) {
 //					asteroid[i].bounce(); // Abprallen des Gegners am Rand
-//
 //				}
-			}
 		}
 		asteroidHit();
-
 
 		// move player
 		player.setMovingAngle(angle);
@@ -247,6 +253,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		} else {
 			// alles, was gemacht werden muss, w�hrend das Spiel l�uft
+			g.drawImage(spielfeld_image, 0, 0, getWidth(), getHeight(), this);
 			AffineTransform backup = g2d.getTransform();
 			g2d.rotate(angle - Math.PI/2,player.getObjectPosition().getX(),player.getObjectPosition().getY());
 			player.paintMe(g2d);
@@ -256,10 +263,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 					shot.paintMe(g2d);
 			}
 
-			for (int i = 0; i < asteroidAlive.length; i++) {
-				if (asteroidAlive[i]) { // Zeichnen des asteroid
+			for (int i = 0; i < asteroid.length; i++) {
+				 // Zeichnen des asteroid
 					asteroid[i].paintMe(g);
-				}
+
 			}
 
 			for (int i = 0; i < ore.length; i++) {

@@ -31,7 +31,7 @@ public class SpielFenster extends JFrame{ //Durch Ableiten von JFrame werden z.B
 
 
 		registerWindowListener();    // WindowListener registrieren (z.B. Schlie�en des Fensters)
-		createMenu();  // Erzeugen des Men�s
+//		createMenu();  // Erzeugen des Men�s
 		
 		add(spielfeld);  //Hinzuf�gen des Spielfeldes zum SpielFenster ; (add() erben alle von Container)
 		pack();  //Ideale Gr��e berechnen
