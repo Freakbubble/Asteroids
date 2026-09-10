@@ -21,8 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.util.Iterator;
 
 public class Spielfeld extends JPanel implements MouseListener, KeyListener, MouseMotionListener { // JPanel ist eine Klasse, in der
@@ -42,6 +41,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private Asteroid[] asteroid;
 	private Ore[] ore;
 
+
 	// Player- und Shot-Variablen
 	private Player player;
 	private ArrayList<Shot> shots;
@@ -55,9 +55,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private double mouseX;
 	private double mouseY;
 
+	//Buttons für das Spielfeld
+	private Button optionsButton;
+
 	public Spielfeld() {
 		setFocusable(true);
 		setPreferredSize(prefSize);
+		setLayout(null);
 
 		gameRunning = false;
 
@@ -83,6 +87,24 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	}
 
 	private void initGame() {
+
+		//Hinzufügen des Buttons der das Optionsmenü aufruft
+		ImageIcon settingsIcon =
+				new ImageIcon("res/assets/Option_Menu.png");
+
+		optionsButton = new Button(settingsIcon,  48, 48);
+
+
+		optionsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pauseGame();
+				// Optionsmenü öffnen
+			}
+		});
+
+		add(optionsButton);
+
 
 //		try {		//Laden der Bilddatei des Spielfeld
 //			spielfeld_image = ImageIO.read( new File( "res/assets/background.jpg" ) );
@@ -376,6 +398,20 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// TODO Auto-generated method stub
 		mouseX = e.getX();
 		mouseY = e.getY();
+	}
+
+	@Override
+	public void doLayout() {
+		super.doLayout();
+
+		if (optionsButton != null) {
+			optionsButton.setBounds(
+					getWidth() - 88,
+					40,
+					48,
+					48
+			);
+		}
 	}
 
 }
