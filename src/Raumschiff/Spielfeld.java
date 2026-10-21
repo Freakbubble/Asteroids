@@ -38,8 +38,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private BufferedImage spielfeld_image;
 
 	// Asteroidvariablen
-	private Asteroid[] asteroid;
-	private Ore[] ore;
+	private ArrayList<Asteroid> asteroids;
+	private ArrayList<Ore> ores;
+	private int startingAsteroidcount = 50;
+	private int spwandelay = 5;
 
 
 	// Player- und Shot-Variablen
@@ -57,6 +59,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	//Buttons für das Spielfeld
 	private Button optionsButton;
+	private Button startGameButton;
 
 	public Spielfeld() {
 		setFocusable(true);
@@ -78,12 +81,12 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 	private void initAsteroid() {
 
-		asteroid = new Asteroid[50];
-		for (int i = 0; i < asteroid.length; i++) {
-			asteroid[i] = new Asteroid(prefSize, 40, 40, Math.random()*2*Math.PI, 1,
-					new Color(0, 0, 0));
+		asteroids = new ArrayList<>();
+		for (int i = 0; i < startingAsteroidcount; i++) {
+			asteroids.add(new Asteroid(prefSize, 40, 40, Math.random()*2*Math.PI, 1,
+					new Color(0, 0, 0)));
 		}
-		ore = new Ore[50];
+		ores = new ArrayList<>();
 	}
 
 	private void initGame() {
@@ -94,17 +97,32 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		optionsButton = new Button(settingsIcon,  48, 48);
 
-
 		optionsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(gameRunning){
 				pauseGame();
+				}
 				// Optionsmenü öffnen
 			}
 		});
 
 		add(optionsButton);
 
+		//Hinzufügen des Buttons der das Spiel startet
+
+		startGameButton = new Button("Spiel starten",new Color (255,255, 255));
+		startGameButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				gameRunning = true;
+
+			revalidate(); //Die doLayout Methode wird noch einmal aufgerufen um die Position des Buttons zu verändern
+			repaint();	  //Löschen des Buttons an der alten Position und zeichnen an der neuen Position
+			}
+		});
+
+		add(startGameButton);
 
 //		try {		//Laden der Bilddatei des Spielfeld
 //			spielfeld_image = ImageIO.read( new File( "res/assets/background.jpg" ) );
@@ -165,7 +183,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Prüft, ob ein Gegner von einem Schuss getroffen wurde
 	private void asteroidHit() {
 
+		// Methode direkt abbrechen, wenn keine Schüsse oder Asteroiden vorhanden sind
+		if (shots.isEmpty() || asteroids.isEmpty()) {
+			return;
+		}
+
 			Iterator<Shot> shotIterator = shots.iterator();
+			Iterator<Asteroid> asteroidIterator =asteroids.iterator();
 
 			while (shotIterator.hasNext()) {
 
@@ -174,16 +198,26 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				double sx = shot.getObjectPosition().getX() + shot.getWidth() / 2; // x- Koordinate des Shot-Mittelpunkts
 				double sy = shot.getObjectPosition().getY() + shot.getHeight() / 2; // y- Koordinate des Shot-Mittelpunkts
 				double sr = shot.getHeight() / 2; // Shot-Radius
-				for (int j = 0; j < asteroid.length; j++) {
-					double ex = asteroid[j].getObjectPosition().getX() + asteroid[j].getWidth() / 2; // x- Koordinate des asteroid-Mittelpunkts
-					double ey = asteroid[j].getObjectPosition().getY() + asteroid[j].getHeight() / 2; // x- Koordinate des
-					// asteroid-Mittelpunkts
-					double er = asteroid[j].getHeight() / 2; // asteroid-Radius
 
-					if (asteroid[j].checkCollision(sx, ex, sy, ey, sr, er)) {
+				while (asteroidIterator.hasNext()) {
+
+					Asteroid asteroid = asteroidIterator.next();
+					double ax = asteroid.getObjectPosition().getX() + asteroid.getWidth() / 2; // x- Koordinate des asteroid-Mittelpunkts
+					double ay = asteroid.getObjectPosition().getY() + asteroid.getHeight() / 2; // x- Koordinate des asteroid-Mittelpunkts
+					double ar = asteroid.getHeight() / 2; // asteroid-Radius
+
+					//1. Schritt: Schneller Test mit AABB(Axis Aligned Bounding Box) Kollisionsüberprüfung
+					// um zu sehen, ob es zwichen Asteroid und Schuss überhaupt zu einer Kollision kommen könnte
+					double maxDistance = ar + sr;
+					if (Math.abs(sx - ax) > maxDistance || Math.abs(sy-ay) > maxDistance){
+						continue;
+					}
+
+					//2. Schritt: Ausführlicher Test ob Asteroid und Schuss wirklich kollidieren
+					if (asteroid.checkCollision(sx, ax, sy, ay, sr, ar)) {
 						shotIterator.remove(); // Shot wird gelöscht
-						ore[j] = asteroid[j].generateOre();// Asteroid wird zerstört
-						s.start(); // Respawn-Timer starten
+						ores.add(asteroid.generateOre());// Asteroid wird zerstört
+//						s.start(); // Respawn-Timer starten
 						break;
 					}
 				}
@@ -225,24 +259,37 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		}
 
+		private void checkAsteroid() {
+
+			Iterator<Asteroid> cAsteroid = asteroids.iterator();
+
+			while (cAsteroid.hasNext()) {
+
+				Asteroid asteroid = cAsteroid.next();
+
+				asteroid.makeMove();
+				;
+
+				if (asteroid.isOut(prefSize)) {
+
+					cAsteroid.remove();
+				}
+
+			}
+		}
+
 
 	private void doOnTick() {
 
 		angle = movingAngle();
 
-		// Die einzelnen Sch�sse werden bewegt und auf Verlassen der
-		// Spielfl�che �berpr�ft.
+		// Die einzelnen Schuesse werden bewegt und auf Verlassen der
+		// Spielflaeche ueberprueft.
 		checkShot();
 
-		for (int i = 0; i < asteroid.length; i++) {
+		// Die einzelnen Asteroiden werden bewegt und auf Verlassen der Spielflaeche ueberprueft
+		checkAsteroid();
 
-				asteroid[i].makeMove();
-
-//				if (asteroid[i].getObjectPosition().getX() <= 0
-//						|| asteroid[i].getObjectPosition().getX() + asteroid[i].getWidth() >= prefSize.getWidth()) {
-//					asteroid[i].bounce(); // Abprallen des Gegners am Rand
-//				}
-		}
 		asteroidHit();
 
 		// move player
@@ -281,19 +328,19 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			player.paintMe(g2d);
 			g2d.setTransform(backup);
 
+			// Zeichnen der Schüsse der Shot-ArrayList
 			for (Shot shot : shots) {
 					shot.paintMe(g2d);
 			}
 
-			for (int i = 0; i < asteroid.length; i++) {
-				 // Zeichnen des asteroid
-					asteroid[i].paintMe(g);
-
+			// Zeichnen der Asteroiden der Asteroids-ArrayList
+			for (Asteroid asteroid : asteroids) {
+					asteroid.paintMe(g);
 			}
 
-			for (int i = 0; i < ore.length; i++) {
-				if(ore[i] != null){
-				ore[i].paintMe(g);
+			// Zeichnen der Erze der Ore-ArrayList
+			for (Ore ore : ores) {
+				ore.paintMe(g);
 				}
 
 			}
@@ -301,7 +348,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 
 
-	}
+
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -341,6 +388,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		if (!gameRunning && e.getClickCount() == 2) {
 			// Alle wichtigen Werte zur�cksetzen
 			gameRunning = true;
+
+			revalidate(); //Die doLayout Methode wird noch einmal aufgerufen um die Position des Buttons zu verändern
+			repaint();	  //Löschen des Buttons an der alten Position und zeichnen an der neuen Position
+
 			startGame();
 		}
 	}
@@ -404,14 +455,28 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	public void doLayout() {
 		super.doLayout();
 
+
+		int buttonWidth = 48;
+		int buttonHeight = 48;
 		if (optionsButton != null) {
-			optionsButton.setBounds(
-					getWidth() - 88,
-					40,
-					48,
-					48
-			);
+			if(!gameRunning){
+				optionsButton.setBounds(
+						(int) (0.5 * getWidth() - 0.5* buttonWidth),
+						(int) (0.5 * getHeight()- 0.5* buttonHeight),
+						buttonWidth,
+						buttonHeight
+				);
+			}
+			else{
+				optionsButton.setBounds(
+						getWidth() - buttonWidth -4,
+						40,
+						buttonWidth,
+						buttonHeight
+				);
+			}
 		}
+
 	}
 
 }
