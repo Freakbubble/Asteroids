@@ -34,7 +34,7 @@ public class Player extends GameObject {
 	}
 	
 	public void setMaxSpeed(double new_maxSpeed) {
-		maxSpeed =new_maxSpeed;
+		maxSpeed = new_maxSpeed;
 	}
 
 	public double getMaxSpeed() {

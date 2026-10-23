@@ -47,7 +47,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Player- und Shot-Variablen
 	private Player player;
 	private ArrayList<Shot> shots;
-	private boolean playerMoveUp;
+	private boolean playerMove;
 	private boolean canShot;
 
 	// Winkel für die Bewegungen des Spielers,der Schüsse und der AffineTransform-Klasse
@@ -195,29 +195,14 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 				Shot shot = shotIterator.next();
 
-				double sx = shot.getObjectPosition().getX() + shot.getWidth() / 2; // x- Koordinate des Shot-Mittelpunkts
-				double sy = shot.getObjectPosition().getY() + shot.getHeight() / 2; // y- Koordinate des Shot-Mittelpunkts
-				double sr = shot.getHeight() / 2; // Shot-Radius
-
 				while (asteroidIterator.hasNext()) {
 
 					Asteroid asteroid = asteroidIterator.next();
-					double ax = asteroid.getObjectPosition().getX() + asteroid.getWidth() / 2; // x- Koordinate des asteroid-Mittelpunkts
-					double ay = asteroid.getObjectPosition().getY() + asteroid.getHeight() / 2; // x- Koordinate des asteroid-Mittelpunkts
-					double ar = asteroid.getHeight() / 2; // asteroid-Radius
 
-					//1. Schritt: Schneller Test mit AABB(Axis Aligned Bounding Box) Kollisionsüberprüfung
-					// um zu sehen, ob es zwichen Asteroid und Schuss überhaupt zu einer Kollision kommen könnte
-					double maxDistance = ar + sr;
-					if (Math.abs(sx - ax) > maxDistance || Math.abs(sy-ay) > maxDistance){
-						continue;
-					}
-
-					//2. Schritt: Ausführlicher Test ob Asteroid und Schuss wirklich kollidieren
-					if (asteroid.checkCollision(sx, ax, sy, ay, sr, ar)) {
+					if (asteroid.checkCollision(shot)) {
 						shotIterator.remove(); // Shot wird gelöscht
-						ores.add(asteroid.generateOre());// Asteroid wird zerstört
-//						s.start(); // Respawn-Timer starten
+						asteroidIterator.remove();
+						ores.add(asteroid.generateOre()); // Erz wird erzeugt
 						break;
 					}
 				}
@@ -256,7 +241,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 				}
 			}
-
 		}
 
 		private void checkAsteroid() {
@@ -268,13 +252,27 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				Asteroid asteroid = cAsteroid.next();
 
 				asteroid.makeMove();
-				;
 
 				if (asteroid.isOut(prefSize)) {
 
 					cAsteroid.remove();
 				}
 
+			}
+		}
+
+		private boolean checkPlayerMouseDistance() {
+
+			double dx = player.getObjectPosition().getX() - mouseX;
+			double dy = player.getObjectPosition().getY() - mouseY;
+
+			double distancePlayerMouse = (dx * dx) + (dy * dy);
+			double minDistance = ((Math.abs(3 * player.getMaxSpeed()) + Math.abs(2 * player.getAcceleration())) * 3 * Math.abs(player.getMaxSpeed()) / 2.25);
+
+			if(distancePlayerMouse > (minDistance * minDistance)) {
+				return true;
+			} else {
+				return false;
 			}
 		}
 
@@ -289,12 +287,12 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		// Die einzelnen Asteroiden werden bewegt und auf Verlassen der Spielflaeche ueberprueft
 		checkAsteroid();
-
 		asteroidHit();
 
-		// move player
+		// Bewegt den Spieler
 		player.setMovingAngle(angle);
-		if(playerMoveUp) {					//Playerbewegung mit Beschleunigung und maximalem Speed
+
+		if(playerMove && checkPlayerMouseDistance()) {					//Playerbewegung mit Beschleunigung und maximalem Speed
 			if(player.getMovingDistance()> player.getMaxSpeed()) {
 			player.setMovingDistance(player.getMovingDistance() + player.getAcceleration());
 		}
@@ -401,10 +399,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		// TODO Auto-generated method stub
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
-			playerMoveUp=true; 
+			playerMove=true;
 			break;
 			case KeyEvent.VK_W:
-			playerMoveUp = true;
+			playerMove = true;
 			break;
 		case KeyEvent.VK_SPACE:  // neuen Schuss mit Space-Taste erzeugen und in Array speichern
 			if (canShot) {
@@ -421,13 +419,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_UP:
-				playerMoveUp = false;
+				playerMove = false;
 				break;
 			case KeyEvent.VK_DOWN:
 				player.setMovingDistance(0);
 				break;
 			case KeyEvent.VK_W:
-				playerMoveUp = false;
+				playerMove = false;
 				break;
 		}
 	}
