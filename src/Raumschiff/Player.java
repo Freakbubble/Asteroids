@@ -49,13 +49,30 @@ public class Player extends GameObject {
 		return shot;
 	}
 
+	public Coordinate[] getPolgygonHitbox(){
+
+		double px = this.getObjectPosition().getX();
+		double py = this.getObjectPosition().getY();
+
+		double cos = Math.cos(movingAngle);
+		double sin = Math.sin(movingAngle);
+
+		// Definition der Punkte P0 (Spitze), P1 (links), P2 (Einbuchtung), P3 (rechts)
+		Coordinate p0 = new Coordinate(px -(-22 * cos),py + (- 22 * sin));
+		Coordinate p1 = new Coordinate(px - 15 * sin - 8 * cos,py + 8 * sin + 15 * cos);
+		Coordinate p2 = new Coordinate(px, py);
+		Coordinate p3 = new Coordinate(px + 15 * sin + 8 * cos, py + 8 * sin + 15 * cos);
+		return new Coordinate[]{p0, p1, p2, p3};
+
+	}
+
 	public void paintMe(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.RED);
 		int x_pos = (int) this.getObjectPosition().getX();
 		int y_pos = (int) this.getObjectPosition().getY();
 		int[] x_poly = { x_pos, x_pos - 15, x_pos, x_pos + 15 };
-		int[] y_poly = { y_pos - 15, y_pos + 8, y_pos, y_pos + 8 };
+		int[] y_poly = { y_pos - 22, y_pos + 8, y_pos, y_pos + 8 };
 		g2d.fillPolygon(x_poly, y_poly, 4); // Zeichnung an der unteren Seite des Raumschiffs.
 	}
 

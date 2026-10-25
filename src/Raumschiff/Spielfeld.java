@@ -29,6 +29,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	//Abfragen der aktuellen Bildschirmgröße und Setzen der Dimension auf diese
 	private final Dimension prefSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
 
+	private int k = 0;
+
 	private Timer t;
 	private Timer s;
 
@@ -199,7 +201,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 					Asteroid asteroid = asteroidIterator.next();
 
-					if (asteroid.checkCollision(shot)) {
+					if (Kollision.checkCollisionBetweenCircles(asteroid, shot)) {
 						shotIterator.remove(); // Shot wird gelöscht
 						asteroidIterator.remove();
 						ores.add(asteroid.generateOre()); // Erz wird erzeugt
@@ -303,13 +305,19 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		}
 		player.makeMove();		
 		repaint();
+		for (Asteroid asteroid : asteroids){
+		if(Kollision.checkPlayerAsteroidCollision(player, asteroid)){
+			t.stop();
+			s.stop();
+		}
+		}
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		Graphics2D g2d = (Graphics2D) g;
-		// Um die Kanten des Objekts zu gl�tten
+		// Um die Kanten des Objekts zu glaetten
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		if (!gameRunning) {

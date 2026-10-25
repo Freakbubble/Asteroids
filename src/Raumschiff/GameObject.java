@@ -56,7 +56,7 @@ public abstract class GameObject {
 		this.movingDistance = movingDistance;
 	}
 		
-	//Durch die Angabe "static" kann die Methode �ber den Klassennamen auch von anderen Klassen aus aufgerufen werden.
+	//Durch die Angabe "static" kann die Methode ueber den Klassennamen auch von anderen Klassen aus aufgerufen werden.
 	public static Coordinate polarToCartesianCoordinates(double angle) {
 		//X-Achse zeigt nach Osten, Y-Achse zeigt nach Sueden beim Zeichnen
 		double x = Math.cos(angle);
@@ -76,32 +76,7 @@ public abstract class GameObject {
 		moveGameObject();
 	}
 
-	public boolean checkCollision(GameObject otherObject) { // Prüfen ob zwei runde Objekte kollidieren
-		// Mittelpunkt und Radius vom Objekt berechnen, das die Methode aufruft (this)
-		double x1 = this.getObjectPosition().getX() + this.getWidth() / 2; // x- Koordinate des Objekts
-		double y1 = this.getObjectPosition().getY() + this.getHeight() / 2; // y- Koordinate des Objekts
-		double r1 = this.getHeight() / 2; // Radius des Objekts
 
-		// Mittelpunkt und Radius des (other)Objekts berechnen mit dem es zu einer Kollision kommen könnte
-		double x2 = otherObject.getObjectPosition().getX() + otherObject.getWidth() / 2; // x- Koordinate des
-		double y2 = otherObject.getObjectPosition().getY() + otherObject.getHeight() / 2; // x- Koordinate des
-		double r2 = otherObject.getHeight() / 2; // asteroid-Radius
-
-		// 1. Schritt: Schneller Test mit AABB(Axis Aligned Bounding Box) Kollisionsüberprüfung
-		// um zu sehen, ob es zwichen den beiden Kreisobjekten überhaupt zu einer Kollision kommen könnte
-		double maxDistance = r1 + r2;
-		if (Math.abs(x1 - x2) > maxDistance || Math.abs(y1 - y2) > maxDistance){
-			return false;
-		}
-		// 2. Schritt: Ausführlicher Test ob beide Objekte wirklich kollidieren
-
-		double dx = x1 - x2;
-		double dy = y1 - y2;
-		double rsum = r1 + r2;
-		double hypote = (dx * dx) + (dy * dy);
-
-		return hypote <= rsum * rsum;
-	}
 
 
 	
