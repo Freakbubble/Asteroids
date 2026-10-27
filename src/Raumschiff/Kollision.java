@@ -44,8 +44,8 @@ public class Kollision {
         // wenn sich diese nicht überschneiden, ist eine Kollision nicht möglich
 
         double px = player.getObjectPosition().getX();
-        double py = player.getObjectPosition().getY() - 3.25;
-        double pr = 18.75;
+        double py = player.getObjectPosition().getY();
+        double pr = 22;
 
         double maxDistancePlayerAsteroid = pr + mr;
         if (Math.abs(px - mx) > maxDistancePlayerAsteroid || Math.abs(py - my) > maxDistancePlayerAsteroid) {
@@ -53,15 +53,6 @@ public class Kollision {
         }
 
         Coordinate[] playerPoints = player.getPolgygonHitbox();
-
-        Polygon poly = new Polygon(
-                new int[]{(int)playerPoints[0].getX(), (int)playerPoints[1].getX(), (int)playerPoints[2].getX(), (int)playerPoints[3].getX()},
-                new int[]{(int)playerPoints[0].getY(), (int)playerPoints[1].getY(), (int)playerPoints[2].getY(), (int)playerPoints[3].getY()},
-                4
-        );
-        if (poly.contains(mx, my)) {
-            return true;
-        }
 
         double minDistanceSquared = Double.MAX_VALUE;
         for (int i = 0; i < playerPoints.length; i++) {
@@ -71,11 +62,11 @@ public class Kollision {
             double by = playerPoints[(i + 1) % playerPoints.length].getY();
 
             double baX = bx - ax;
-            double baY = by - bx;
+            double baY = by - ay;
             double maX = mx - ax;
             double maY = my - ay;
 
-            double baLenghtSquared = (baX * baX) + (baY * baY);
+            double baLenghtSquared = (baX * baX) + (baY * baY) ;
             double qx;
             double qy;
 
@@ -84,7 +75,7 @@ public class Kollision {
                 qy = ay;
             }
             else {
-                double dotProduct = (maX * bx) + (maY * by);
+                double dotProduct = (maX * baX) + (maY * baY);
                 double t = dotProduct/baLenghtSquared;
 
                 qx = ax + Math.clamp(t,0,1) * baX;

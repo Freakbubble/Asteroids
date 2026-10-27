@@ -1,12 +1,6 @@
 package Raumschiff;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -350,6 +343,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				}
 
 			}
+		Coordinate[] playerPoints = player.getPolgygonHitbox();
+
+		 int[] x_poly= {(int)playerPoints[0].getX(), (int)playerPoints[1].getX(), (int)playerPoints[2].getX(), (int)playerPoints[3].getX()};
+		 int[] y_poly= {(int)playerPoints[0].getY(), (int)playerPoints[1].getY(), (int)playerPoints[2].getY(), (int)playerPoints[3].getY()};
+		 g2d.fillPolygon(x_poly, y_poly,4);
+
+
 
 		}
 

@@ -54,14 +54,14 @@ public class Player extends GameObject {
 		double px = this.getObjectPosition().getX();
 		double py = this.getObjectPosition().getY();
 
-		double cos = Math.cos(movingAngle);
-		double sin = Math.sin(movingAngle);
+		double cos = Math.cos(movingAngle - Math.PI/2);
+		double sin = Math.sin(movingAngle - Math.PI/2);
 
 		// Definition der Punkte P0 (Spitze), P1 (links), P2 (Einbuchtung), P3 (rechts)
-		Coordinate p0 = new Coordinate(px -(-22 * cos),py + (- 22 * sin));
-		Coordinate p1 = new Coordinate(px - 15 * sin - 8 * cos,py + 8 * sin + 15 * cos);
+		Coordinate p0 = new Coordinate(px + 22 * sin, py - 22 * cos);
+		Coordinate p1 = new Coordinate(px - 15 * cos - 8 * sin, py - 15 * sin + 8 * cos);
 		Coordinate p2 = new Coordinate(px, py);
-		Coordinate p3 = new Coordinate(px + 15 * sin + 8 * cos, py + 8 * sin + 15 * cos);
+		Coordinate p3 = new Coordinate( px + 15 * cos - 8 * sin, py + 15 * sin + 8 * cos);
 		return new Coordinate[]{p0, p1, p2, p3};
 
 	}
