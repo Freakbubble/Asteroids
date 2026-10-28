@@ -10,6 +10,8 @@ public class Player extends GameObject {
 	int shotspeed = -8;
 	private double acceleration = -0.25;
 	private double maxSpeed = -5;
+	private double magnetReach = 100;
+	private  double magnetStrenght = 5;
 
 	public Player(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
 
@@ -35,6 +37,22 @@ public class Player extends GameObject {
 	
 	public void setMaxSpeed(double new_maxSpeed) {
 		maxSpeed = new_maxSpeed;
+	}
+
+	public double getMagnetReach() {
+		return magnetReach;
+	}
+
+	public void setMagnetReach(double new_magnetReach) {
+		this.magnetReach = new_magnetReach;
+	}
+
+	public double getMagnetStrenght() {
+		return magnetStrenght;
+	}
+
+	public void setMagnetStrenght(double new_magnetStrenght) {
+		this.magnetStrenght = magnetStrenght;
 	}
 
 	public double getMaxSpeed() {
@@ -76,4 +94,5 @@ public class Player extends GameObject {
 		g2d.fillPolygon(x_poly, y_poly, 4); // Zeichnung an der unteren Seite des Raumschiffs.
 	}
 
-}
+
+    }

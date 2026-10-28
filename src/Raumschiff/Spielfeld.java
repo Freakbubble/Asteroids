@@ -30,13 +30,13 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	private Cursor c;
 
 	private boolean gameRunning;
-	private BufferedImage spielfeld_image;
+	private BufferedImage titleScreen_image;
 
 	// Asteroidvariablen
 	private ArrayList<Asteroid> asteroids;
 	private ArrayList<Ore> ores;
 	private int startingAsteroidcount = 50;
-	private int spwandelay = 5;
+	private int spawandelay = 5;
 
 
 	// Player- und Shot-Variablen
@@ -114,16 +114,18 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 			revalidate(); //Die doLayout Methode wird noch einmal aufgerufen um die Position des Buttons zu verändern
 			repaint();	  //Löschen des Buttons an der alten Position und zeichnen an der neuen Position
+			startGame();
+
 			}
 		});
 
 		add(startGameButton);
 
-//		try {		//Laden der Bilddatei des Spielfeld
-//			spielfeld_image = ImageIO.read( new File( "res/assets/background.jpg" ) );
-//		} catch (IOException e) {
-//			System.out.println(e);
-//		}
+		try {		//Laden der Bilddatei des Spielfeld
+			titleScreen_image = ImageIO.read( new File( "res/assets/background1.png" ) );
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 
 		// asteroid und Player initiieren
 		initPlayer();
@@ -264,11 +266,8 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			double distancePlayerMouse = (dx * dx) + (dy * dy);
 			double minDistance = ((Math.abs(3 * player.getMaxSpeed()) + Math.abs(2 * player.getAcceleration())) * 3 * Math.abs(player.getMaxSpeed()) / 2.25);
 
-			if(distancePlayerMouse > (minDistance * minDistance)) {
-				return true;
-			} else {
-				return false;
-			}
+			return distancePlayerMouse > (minDistance * minDistance);
+
 		}
 
 
@@ -314,14 +313,10 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		if (!gameRunning) {
-			g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-			g2d.setColor(Color.BLUE);
-			g2d.drawString("Fuehre einen Doppelklick aus,", 20, 20);
-			g2d.drawString("um das Spiel zu starten!", 20, 40);
-
+			g.drawImage(titleScreen_image, 0, 0, getWidth(), getHeight(), this);
 		} else {
 			// alles, was gemacht werden muss, w�hrend das Spiel l�uft
-			g.drawImage(spielfeld_image, 0, 0, getWidth(), getHeight(), this);
+
 			AffineTransform backup = g2d.getTransform();
 			g2d.rotate(angle - Math.PI/2,player.getObjectPosition().getX(),player.getObjectPosition().getY());
 			player.paintMe(g2d);
@@ -342,13 +337,14 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				ore.paintMe(g);
 				}
 
-			}
-		Coordinate[] playerPoints = player.getPolgygonHitbox();
+		}
 
-		 int[] x_poly= {(int)playerPoints[0].getX(), (int)playerPoints[1].getX(), (int)playerPoints[2].getX(), (int)playerPoints[3].getX()};
-		 int[] y_poly= {(int)playerPoints[0].getY(), (int)playerPoints[1].getY(), (int)playerPoints[2].getY(), (int)playerPoints[3].getY()};
-		 g2d.fillPolygon(x_poly, y_poly,4);
-
+		//Test ob Player-Hitbox und Player übereinander gezeichnet werden
+//	Coordinate[] playerPoints = player.getPolgygonHitbox();
+//
+//		 int[] x_poly= {(int)playerPoints[0].getX(), (int)playerPoints[1].getX(), (int)playerPoints[2].getX(), (int)playerPoints[3].getX()};
+//		 int[] y_poly= {(int)playerPoints[0].getY(), (int)playerPoints[1].getY(), (int)playerPoints[2].getY(), (int)playerPoints[3].getY()};
+//		 g2d.fillPolygon(x_poly, y_poly,4);
 
 
 		}
@@ -462,27 +458,38 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		super.doLayout();
 
 
-		int buttonWidth = 48;
-		int buttonHeight = 48;
+		int optionsButtonWidth = 48;
+		int optionsButtonHeight = 48;
+		int startButtonWidth = 250;
+		int startButtonHeight = 75;
+
+		if(startGameButton !=null) {
+			startGameButton.setBounds((int)(0.5 *(getWidth()- startButtonWidth)),
+					                  (int)(0.5 * (getHeight()-startButtonHeight)),
+									  startButtonWidth,
+									  startButtonHeight);
+			startGameButton.setVisible(!gameRunning);
+		}
 		if (optionsButton != null) {
-			if(!gameRunning){
-				optionsButton.setBounds(
-						(int) (0.5 * getWidth() - 0.5* buttonWidth),
-						(int) (0.5 * getHeight()- 0.5* buttonHeight),
-						buttonWidth,
-						buttonHeight
-				);
-			}
-			else{
-				optionsButton.setBounds(
-						getWidth() - buttonWidth -4,
-						40,
-						buttonWidth,
-						buttonHeight
-				);
+				if(!gameRunning){
+					optionsButton.setBounds(
+							(int) (0.5 *(getWidth()- startButtonWidth) + startButtonWidth) ,
+							(int) (0.5 * (getHeight()-startButtonHeight)),
+							optionsButtonWidth,
+							optionsButtonHeight
+					);
+				}
+				else{
+					optionsButton.setBounds(
+							getWidth() - optionsButtonWidth -4,
+							40,
+							optionsButtonWidth,
+							optionsButtonHeight
+					);
+				}
 			}
 		}
 
 	}
 
-}
+
