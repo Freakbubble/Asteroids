@@ -122,7 +122,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		add(startGameButton);
 
 		try {		//Laden der Bilddatei des Spielfeld
-			titleScreen_image = ImageIO.read( new File( "res/assets/background1.png" ) );
+			titleScreen_image = ImageIO.read( new File( "res/assets/Title_Screen.png" ) );
 		} catch (IOException e) {
 			System.out.println(e);
 		}
@@ -387,15 +387,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if (!gameRunning && e.getClickCount() == 2) {
-			// Alle wichtigen Werte zur�cksetzen
-			gameRunning = true;
 
-			revalidate(); //Die doLayout Methode wird noch einmal aufgerufen um die Position des Buttons zu verändern
-			repaint();	  //Löschen des Buttons an der alten Position und zeichnen an der neuen Position
-
-			startGame();
-		}
 	}
 
 	@Override
@@ -458,14 +450,14 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		super.doLayout();
 
 
-		int optionsButtonWidth = 48;
-		int optionsButtonHeight = 48;
+		int optionsButtonWidth = 75;
+		int optionsButtonHeight = 75;
 		int startButtonWidth = 250;
 		int startButtonHeight = 75;
 
 		if(startGameButton !=null) {
 			startGameButton.setBounds((int)(0.5 *(getWidth()- startButtonWidth)),
-					                  (int)(0.5 * (getHeight()-startButtonHeight)),
+					                  (int)(0.75 * (getHeight()-startButtonHeight)),
 									  startButtonWidth,
 									  startButtonHeight);
 			startGameButton.setVisible(!gameRunning);
@@ -474,7 +466,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 				if(!gameRunning){
 					optionsButton.setBounds(
 							(int) (0.5 *(getWidth()- startButtonWidth) + startButtonWidth) ,
-							(int) (0.5 * (getHeight()-startButtonHeight)),
+							(int) (0.75 * (getHeight()-startButtonHeight)),
 							optionsButtonWidth,
 							optionsButtonHeight
 					);
