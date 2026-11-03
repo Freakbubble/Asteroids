@@ -35,7 +35,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	// Asteroidvariablen
 	private ArrayList<Asteroid> asteroids;
 	private ArrayList<Ore> ores;
-	private int startingAsteroidcount = 50;
+	private int startingAsteroidcount = 10;
 	private int spawandelay = 5;
 
 
@@ -78,7 +78,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 
 		asteroids = new ArrayList<>();
 		for (int i = 0; i < startingAsteroidcount; i++) {
-			asteroids.add(new Asteroid(prefSize, 40, 40, Math.random()*2*Math.PI, 1,
+			asteroids.add(new Asteroid(prefSize, 60, 60, Math.random()*2*Math.PI, 1,
 					new Color(0, 0, 0)));
 		}
 		ores = new ArrayList<>();
@@ -258,6 +258,17 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 			}
 		}
 
+	private void updateOres() {
+		Iterator<Ore> oreIterator = ores.iterator();
+		while (oreIterator.hasNext()) {
+			Ore ore = oreIterator.next();
+			if (ore.isExpired()) {
+				oreIterator.remove();
+				continue;
+			}
+		}
+	}
+
 		private boolean checkPlayerMouseDistance() {
 
 			double dx = player.getObjectPosition().getX() - mouseX;
@@ -283,6 +294,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		checkAsteroid();
 		asteroidHit();
 
+		updateOres();
 		// Bewegt den Spieler
 		player.setMovingAngle(angle);
 

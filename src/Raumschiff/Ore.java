@@ -6,9 +6,12 @@ import java.awt.geom.Ellipse2D;
 public class Ore extends GameObject{
 
     private int value;
+    private final long createdAtMills;
+    private static final long LifetimeMills = 5_000L;
 
     public Ore(Coordinate objectPosition, double width, double height) {
         super(objectPosition, width, height);
+        createdAtMills = System.currentTimeMillis();
     }
 
     public void setValue(int newValue) {
@@ -17,6 +20,10 @@ public class Ore extends GameObject{
 
     public int getValue(){
         return value;
+    }
+
+    public boolean isExpired(){
+        return System.currentTimeMillis() - createdAtMills > LifetimeMills;
     }
 
     @Override
