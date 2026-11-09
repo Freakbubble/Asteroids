@@ -719,7 +719,6 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	}
 
 	//Berechnet anhand der Mausposition den Zielwinkel für das Raumschiff.
-
 	private double movingAngle() {
 		double dx = player.getObjectPosition().getX() - mouseX;
 		double dy = player.getObjectPosition().getY() - mouseY;
