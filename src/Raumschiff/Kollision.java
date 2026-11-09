@@ -35,7 +35,6 @@ public class Kollision {
     public static boolean checkPlayerAsteroidCollision(Player player, Asteroid asteroid) {
 
 
-
         double mx = asteroid.getObjectPosition().getX() + asteroid.getWidth() / 2;
         double my = asteroid.getObjectPosition().getY() + asteroid.getHeight() / 2;
         double mr = asteroid.getHeight() / 2;
@@ -52,8 +51,10 @@ public class Kollision {
             return false;
         }
 
+        //Übermitteln der Playerhitbox des Spielers
         Coordinate[] playerPoints = player.getPolgygonHitbox();
 
+        //Siehe 3.3 Kollision eines Kreises mit einem Polygon
         double minDistanceSquared = Double.MAX_VALUE;
         for (int i = 0; i < playerPoints.length; i++) {
             double ax = playerPoints[i].getX();
@@ -75,6 +76,7 @@ public class Kollision {
                 qy = ay;
             }
             else {
+                //Skalarprodukt bilden
                 double dotProduct = (maX * baX) + (maY * baY);
                 double t = dotProduct/baLenghtSquared;
 
@@ -86,7 +88,6 @@ public class Kollision {
             if (qmDistanceSquared < minDistanceSquared){
                 minDistanceSquared = qmDistanceSquared;
             }
-
         }
         return minDistanceSquared <= (mr * mr);
     }

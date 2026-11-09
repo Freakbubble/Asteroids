@@ -5,13 +5,16 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 
 public class Player extends GameObject {
-	// Variablen
+	// Spielerwerte: Schussparameter, Bewegung, Magnet, Lebenspunkte und Schaden
 	int shotsize = 3;
 	int shotspeed = -8;
+	private int damage = 1;
 	private double acceleration = -0.25;
 	private double maxSpeed = -5;
 	private double magnetReach = 100;
-	private  double magnetStrenght = 5;
+	private  double magnetStrength = 5;
+	private int maxHealth = 1;
+	private int currentHealth = 1;
 
 	public Player(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
 
@@ -47,18 +50,53 @@ public class Player extends GameObject {
 		this.magnetReach = new_magnetReach;
 	}
 
-	public double getMagnetStrenght() {
-		return magnetStrenght;
+	public double getMagnetStrength() {
+		return magnetStrength;
 	}
 
-	public void setMagnetStrenght(double new_magnetStrenght) {
-		this.magnetStrenght = magnetStrenght;
+	public void setMagnetStrength(double new_magnetStrength) {
+		this.magnetStrength = new_magnetStrength;
 	}
 
 	public double getMaxSpeed() {
 		return maxSpeed;
 	}
 
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+
+	public void setMaxHealth(int new_maxHealth) {
+		this.maxHealth = new_maxHealth;
+	}
+    //Verringert die aktuellen Lebenspunkte um den erhaltenen Schaden
+	public void takeDamage(int damageAmount){
+		currentHealth = currentHealth - damageAmount;
+	}
+
+	public int getCurrentHealth() {
+		return currentHealth;
+	}
+
+	public void setCurrentHealth(int new_currentHealth) {
+		this.currentHealth = new_currentHealth;
+	}
+
+    //Heilt das Raumschiff vor Start einer Runde auf die vollen Leben
+	public void healToFull() {
+		currentHealth = maxHealth;
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int new_damage) {
+		this.damage = new_damage;
+	}
+
+
+	//Erzeugt einen neuen Schuss an der Spitze des Raumschiffs
 	public Shot generateShot(double movingAngle_Raumschiff) {
 		Shot shot = new Shot(
 				new Coordinate(this.getObjectPosition().getX() - shotsize / 2 - Math.cos(movingAngle_Raumschiff) *10,
@@ -67,6 +105,8 @@ public class Player extends GameObject {
 		return shot;
 	}
 
+	//Berechnet die vier Eckpunkte des gedrehten Polygons und gibt diese als Coordinate zurück
+	//um diese in Kollision nutzen zu können
 	public Coordinate[] getPolgygonHitbox(){
 
 		double px = this.getObjectPosition().getX();
@@ -95,4 +135,5 @@ public class Player extends GameObject {
 	}
 
 
-    }
+
+}

@@ -1,0 +1,10 @@
+#Raumschiff-Master-Spielstand
+#Mon Nov 09 18:02:34 CET 2026
+cooldownLevel=0
+damageLevel=0
+healthLevel=0
+money=0
+spawnLevel=0
+spawnRateLevel=0
+startAsteroidsLevel=0
+timeLimitLevel=0

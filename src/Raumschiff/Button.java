@@ -5,6 +5,7 @@ import java.awt.*;
 public class Button extends JButton {
     Font btnFont = new Font("Arial", Font.BOLD, 24); // Arial;
 
+    //Button mit Text und Festerhintergrundfarbe
     public Button(String text) {
         super(text);
         setFont(btnFont);
@@ -12,6 +13,7 @@ public class Button extends JButton {
         setForeground(new Color(255, 255, 255, 179));
     }
 
+    //Button mit Text und wählbarer Hintergrundfarbe
     public Button(String text, Color color) {
         super(text);
         setFont(btnFont);

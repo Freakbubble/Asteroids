@@ -18,18 +18,18 @@ public class SaveManager {
     // Die Datei master.txt dient als Vorlage für neue oder zurückgesetzte Spielstände.
     private static final String MASTER_FILE = "master.txt";
     // Path stellt den Speicherort der Vorlage als Dateipfad dar.
-    private final Path masterPath = Paths.get(MASTER_FILE);
+    private final Path masterPath = Paths.get("res/game_files/" + MASTER_FILE);
 
     // Wird beim Erzeugen eines SaveManager-Objekts aufgerufen.
-    //Stellt sicher, dass die Vorlage und alle drei Spielstandsdateien existieren.
+    //Stellt sicher, dass die Vorlage und alle drei Spielstandsdateien existieren
     public SaveManager() throws IOException {
+        //Prüft die Masterdatei und erstellt fehlende Slotdateien, sofern der Zielordner existiert
         ensureMasterFile();
         createMissingSlotsFromMaster();
     }
 
      //Erstellt die master.txt bei Bedarf und ergänzt fehlende Einträge,
      //falls die Datei bereits vorhanden ist
-
     private void ensureMasterFile() throws IOException {
         // Existiert noch keine Vorlage, wird sie mit allen Startwerten angelegt.
         if (!Files.exists(masterPath)) {
@@ -113,30 +113,26 @@ public class SaveManager {
         }
     }
 
-    // Ermittelt den Dateinamen zu einem Speicherplatz, z. B. 2 -> save2.txt. */
+    // Ermittelt den Dateinamen zu einem Speicherplatz, z. B. 2 -> save2.txt.
     private Path getSlotPath(int slot) {
-        validateSlot(slot);
-        return Paths.get("save" + slot + ".txt");
-    }
-
-    // Verhindert die Verwendung ungültiger Speicherplätze (nur 1 bis 3 erlaubt). */
-    private void validateSlot(int slot) {
+        // Verhindert die Verwendung ungültiger Speicherplätze (nur 1 bis 3 erlaubt).
         if (slot < 1 || slot > SLOT_COUNT) {
             throw new IllegalArgumentException("Der Spielstand muss zwischen 1 und 3 liegen.");
         }
+        else {
+            return Paths.get("res/game_files/save" + slot + ".txt");
+        }
     }
+
 
      //Setzt einen Spielstand zurück, indem die Vorlage darüberkopiert wird.
      //REPLACE_EXISTING erlaubt ausdrücklich das Überschreiben der alten Datei.
-
     public void resetSlot(int slot) throws IOException {
         Files.copy(masterPath, getSlotPath(slot), StandardCopyOption.REPLACE_EXISTING);
     }
 
-
      //Lädt einen Spielstand aus seiner Datei und gibt die Werte als SaveData zurück
      // Fehlt die Datei, wird zuvor eine neue Kopie der master.txt erstellt
-
     public SaveData load(int slot) throws IOException {
         Path path = getSlotPath(slot);
         if (!Files.exists(path)) {
@@ -196,8 +192,9 @@ public class SaveManager {
         int level = data.getLevel(upgrade);
         int maxLevel = getMaxLevel(upgrade);
         int cost = getUpgradeCost(upgrade, level);
-        // Kein Kauf möglich, wenn Stufe 5 erreicht ist oder Credits fehlen
-        if (level >= maxLevel || data.money < cost) {
+        // Kein Kauf möglich, wenn Stufe 5 erreicht ist, Credits fehlen oder das vorherige Upgrade
+        // nicht freigeschaltet wurde
+        if (!isUpgradeUnlocked(data, upgrade) || level >= maxLevel || data.money < cost) {
             return false;
         }
 
@@ -208,14 +205,34 @@ public class SaveManager {
         return true;
     }
 
-     //Berechnet den Preis für die NÄCHSTE Stufe eines Upgrades
-     //Beispiel: „damage“ kostet bei Stufe 0 insgesamt 12 Credits,
-     //bei Stufe 1 dann 24 Credits. Unbekannte Namen lösen einen Fehler aus.
+    //Prüft ob die vorherige Stufe gekauft wurde
+    public String getPreviousUpgrade(String upgrade) {
+            switch (upgrade) {
+                case "startAsteroids":
+                    return "damage";
+                case "health","cooldown","spawnRate":
+                    return "startAsteroids";
+                case "timeLimit":
+                    return "spawnRate";
+                default:
+                    return null;
+        }
+    }
 
+    //Eine gekaufte Stufe des jeweils verbundenen Vorgängers muss vorhanden sein
+    public boolean isUpgradeUnlocked(SaveData data, String upgrade) {
+        String previous = getPreviousUpgrade(upgrade);
+        return previous == null || data.getLevel(previous) >= 1;
+    }
+
+
+     //Berechnet den Preis für die NÄCHSTE Stufe eines Upgrades
+     //Beispiel: „damage“ kostet bei Stufe 0 insgesamt 10 Credits,
+     //bei Stufe 1 dann 20 Credits. Unbekannte Namen lösen einen Fehler aus.
     public int getUpgradeCost(String upgrade, int currentLevel) {
         switch (upgrade) {
-            case "damage": return 12 + currentLevel * 12;
-            case "cooldown": return 14 + currentLevel * 12;
+            case "damage": return 10 + currentLevel * 10;
+            case "cooldown": return 1 + currentLevel * 12;
             case "health": return 14 + currentLevel * 12;
             case "startAsteroids": return 10 + currentLevel * 10;
             case "spawnRate": return 18 + currentLevel * 14;
@@ -243,7 +260,7 @@ public class SaveManager {
      //Fügt dem gewählten Spielstand Spielgeld hinzu und speichert diese Änderung sofort,
      //dabei werden null oder negative Beträge ignoriert
 
-    public void addCredits(int slot, SaveData data, int amount) throws IOException {
+    public void addMoney(int slot, SaveData data, int amount) throws IOException {
         if (amount <= 0) return;
         data.money += amount;
         save(slot, data);
@@ -291,8 +308,7 @@ public class SaveManager {
         }
 
 
-//         Addiert sechs Upgrade-Stufen zu einem Gesamtwert
-
+//         Addiert alle sechs Upgrade-Stufen zu einem Gesamtwert
         public int getTotalUpgradeLevels() {
             return damageLevel + cooldownLevel + healthLevel
                     + startAsteroidsLevel + spawnRateLevel + timeLimitLevel;

@@ -7,6 +7,7 @@ import java.awt.geom.Ellipse2D;
 
 public class Shot extends GameObject {
 
+	// Eigener Schadenswert des Projektils
 	private int damage = 0;
 
 	public Shot(Coordinate objectPosition, double width, double height, double movingAngle, double movingDistance) {
@@ -32,7 +33,7 @@ public class Shot extends GameObject {
 		super.makeMove();
 	}
 
-	// prueft, ob das Geschoss das Spielfeld verlassen hat
+	//Prueft, ob das Geschoss das Spielfeld verlassen hat
 	public boolean isOut(Dimension d) {
 
 		if(getObjectPosition().getX() < 0 || getObjectPosition().getX() + this.getWidth() > d.getWidth()
@@ -48,7 +49,7 @@ public class Shot extends GameObject {
 		// TODO Auto-generated method stub
 
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(new Color(255,164,32));
 
 		Ellipse2D.Double shot = new Ellipse2D.Double(getObjectPosition().getX(), getObjectPosition().getY(), getWidth(),
 				getHeight());
