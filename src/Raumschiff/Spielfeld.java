@@ -223,7 +223,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 		optionsButton.addActionListener(e -> showOptionsDialog());
 		add(optionsButton);
 
-		// Das ControlsButton nutzt ein Bild, falls nicht vorhanden wird text genutzt
+		//Der ControlsButton nutzt ein Bild, falls nicht vorhanden wird text genutzt
 		File controlsButtonFile = new File("res/assets/Steuerung_Button.png");
 		if (controlsButtonFile.isFile()) {
 			controlsButton = new Button(new ImageIcon(controlsButtonFile.getPath()), 42, 42);
@@ -500,6 +500,7 @@ public class Spielfeld extends JPanel implements MouseListener, KeyListener, Mou
 	}
 
 	//Öffnet die Spielsteuerung als Grafik aus res/assets/Steuerung.png
+	//Dieses Bild wurde mit der Hilfe der KI ChatGPT am 09.11.2026 erstellt
 	private void showControlsDialog() {
 		boolean resumeAfterDialog = currentScreen == Screen.PLAYING && gameRunning && !gamePaused;
 		if (resumeAfterDialog) {
